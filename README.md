@@ -70,7 +70,7 @@ sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipchec
   -o /usr/local/bin/ipcheck
 
 sudo chmod +x /usr/local/bin/ipcheck
-
+```
 
 ### **Install `ipcheck` globally**
 From inside the project directory:
