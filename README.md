@@ -20,53 +20,54 @@ It supports:
   ipcheck --short
   # 141.144.249.103 - Germany (DE) 🇩🇪
 
-Quiet output (IP only)
+- ***Quiet output (IP only)***
+  ```bash
+  ipcheck --quiet
+  # 141.144.249.103
 
-ipcheck --quiet
-# 141.144.249.103
+- ***Raw JSON / pretty JSON***
+  ```bash
+  ipcheck --raw
+  ipcheck --raw-pretty
 
-Raw JSON / pretty JSON
+- ***Lookup a specific IP***
+  ```bash
+  ipcheck --ip 8.8.8.8
+  ipcheck --ip 1.1.1.1 --short
 
-ipcheck --raw
-ipcheck --raw-pretty
 
-Lookup a specific IP
+## Installation 
+***Requirements***
 
-ipcheck --ip 8.8.8.8
-ipcheck --ip 1.1.1.1 --short
-
-Installation
-Requirements
-
-bash
-
-curl
-
-jq
-
-python3 (recommended: for IP validation + flag emoji)
-
-Linux or macOS terminal
+- `bash`
+- `curl`
+- `jq`
+- `python3` (recommended: for IP validation + flag emoji)
+- Linux or macOS terminal
 
 On Ubuntu / Debian:
+ ```bash
+ sudo apt update
+ sudo apt install curl jq python3
+ 
+```
 
-sudo apt update
-sudo apt install curl jq python3
+***Install as a global command***
 
-Install as a global command
+ From the project directory:
+ ```bash
+ chmod +x ipcheck
+ sudo cp ipcheck /usr/local/bin/ipcheck
 
-From the project directory:
-
-chmod +x ipcheck
-sudo cp ipcheck /usr/local/bin/ipcheck
-
+ ```
 
 Now you can run:
-
+ ```bash
 ipcheck
-
-Usage
-ipcheck v0.7
+```
+***Usage***
+ ```bash
+ipcheck v0.7.1
 
 Usage: ipcheck [OPTIONS]
 
@@ -81,4 +82,5 @@ Options:
       --no-flag      Disable country flag emoji
       --check-update Check for a newer ipcheck version (if UPDATE_URL is set)
   -h, --help         Show this help message and exit
+```
 
