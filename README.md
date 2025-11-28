@@ -67,7 +67,7 @@ ipcheck
 ```
 ***Usage***
  ```text
-ipcheck v0.7.1
+ipcheck v0.7.3
 
 Usage: ipcheck [OPTIONS]
 
