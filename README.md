@@ -55,13 +55,22 @@ ipcheck --ip 1.1.1.1 --short
 - `python3` (recommended for IP validation + emojis)
 - Linux or macOS terminal
 
-### **Install dependencies on Ubuntu/Debian**
+---
+
+## ⭐ One‑Line Install (Linux or macOS)
+
 ```bash
-sudo apt update
-sudo apt install curl jq python3
+bash <(curl -sL https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/install.sh)
 ```
 
-### Install `ipcheck` globally
+This automatically:
+- Detects your OS  
+- Installs required dependencies  
+- Installs `ipcheck` in the correct directory  
+
+---
+
+## 🛠 Manual Installation
 
 ### **Option 1 — Clone repository & install (Linux or macOS)**
 
@@ -85,36 +94,35 @@ ipcheck
 Download directly into `/usr/local/bin`:
 
 ```bash
-sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck   -o /usr/local/bin/ipcheck
-
+sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck -o /usr/local/bin/ipcheck
 sudo chmod +x /usr/local/bin/ipcheck
 ```
 
 ---
 
-### **Option 3 — Quick Install (macOS)**
+### **Option 3 — Quick Install (macOS)**  
 
-macOS already includes `bash`, `curl`, and `python3`.  
-Only `jq` is needed:
+Install dependencies:
 
 ```bash
 brew install jq
 ```
 
-Then install `ipcheck`:
+Then install:
 
 ```bash
-sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck   -o /usr/local/bin/ipcheck
-
+sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck -o /usr/local/bin/ipcheck
 sudo chmod +x /usr/local/bin/ipcheck
 ```
 
-Now test:
+Test:
 
 ```bash
 ipcheck
 ```
+
 ---
+
 ## 📘 Usage
 
 ```
@@ -139,7 +147,7 @@ Options:
 
 ## 🔄 Update Checking
 
-`ipcheck` includes a built-in update mechanism.
+`ipcheck` includes a built‑in update mechanism.
 
 To check if a newer version is available:
 
