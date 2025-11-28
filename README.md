@@ -66,7 +66,7 @@ Now you can run:
 ipcheck
 ```
 ***Usage***
- ```bash
+ ```text
 ipcheck v0.7.1
 
 Usage: ipcheck [OPTIONS]
