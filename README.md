@@ -61,25 +61,56 @@ sudo apt update
 sudo apt install curl jq python3
 ```
 
-### **Quick Install (recommended)**
+### Install `ipcheck` globally
 
-This installs `ipcheck` directly from GitHub into `/usr/local/bin`:
+### **Option 1 — Clone repository & install (Linux or macOS)**
 
 ```bash
-sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck \
-  -o /usr/local/bin/ipcheck
+git clone https://github.com/vespovios/ipcheck-cli.git
+cd ipcheck-cli
 
-sudo chmod +x /usr/local/bin/ipcheck
-```
-
-### **Install `ipcheck` globally**
-From inside the project directory:
-```bash
 chmod +x ipcheck
 sudo cp ipcheck /usr/local/bin/ipcheck
 ```
 
 Now you can run:
+
+```bash
+ipcheck
+```
+
+---
+
+### **Option 2 — Quick Install (Linux)**  
+Download directly into `/usr/local/bin`:
+
+```bash
+sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck   -o /usr/local/bin/ipcheck
+
+sudo chmod +x /usr/local/bin/ipcheck
+```
+
+---
+
+### **Option 3 — Quick Install (macOS)**
+
+macOS already includes `bash`, `curl`, and `python3`.  
+Only `jq` is needed:
+
+```bash
+brew install jq
+```
+
+Then install `ipcheck`:
+
+```bash
+sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck   -o /usr/local/bin/ipcheck
+
+sudo chmod +x /usr/local/bin/ipcheck
+```
+
+Now test:
+
 ```bash
 ipcheck
 ```
