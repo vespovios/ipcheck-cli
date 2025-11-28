@@ -1,5 +1,12 @@
 # ipcheck-cli
 
+[![Homebrew tap](https://img.shields.io/badge/homebrew-vespovios%2Fipcheck-blue)](https://github.com/vespovios/homebrew-ipcheck)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/vespovios/ipcheck-cli)
+![GitHub all releases](https://img.shields.io/github/downloads/vespovios/ipcheck-cli/total)
+![License](https://img.shields.io/github/license/vespovios/ipcheck-cli)
+[![CI](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml)
+![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://github.com/vespovios/ipcheck-cli&title=Visitors)
+
 `ipcheck` is a lightweight Bash CLI tool for querying IP geolocation information using the public API at **https://get.geojs.io**.
 
 It supports:
@@ -52,46 +59,68 @@ ipcheck --ip 1.1.1.1 --short
 - `bash`
 - `curl`
 - `jq`
-- `python3` (recommended for IP validation + emojis)
+- `python3`
 - Linux or macOS terminal
 
 ---
 
-## ⭐ One‑Line Install (Linux or macOS)
+## 🍺 Homebrew Install (macOS & Linuxbrew)
+
+Install directly from your tap:
+
+```bash
+brew install vespovios/ipcheck/ipcheck
+```
+
+Or tap first:
+
+```bash
+brew tap vespovios/ipcheck
+brew install ipcheck
+```
+
+Update:
+
+```bash
+brew upgrade ipcheck
+```
+
+Uninstall:
+
+```bash
+brew uninstall ipcheck
+```
+
+---
+
+## ⭐ One-Line Install (Linux or macOS)
 
 ```bash
 bash <(curl -sL https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/install.sh)
 ```
 
-This automatically:
-- Detects your OS  
-- Installs required dependencies  
-- Installs `ipcheck` in the correct directory  
+This will:
+
+- Detect your OS  
+- Install required dependencies  
+- Install `ipcheck` to a suitable bin directory  
 
 ---
 
 ## 🛠 Manual Installation
 
-### **Option 1 — Clone repository & install (Linux or macOS)**
+### **Option 1 — Clone repository & install**
 
 ```bash
 git clone https://github.com/vespovios/ipcheck-cli.git
 cd ipcheck-cli
-
 chmod +x ipcheck
 sudo cp ipcheck /usr/local/bin/ipcheck
-```
-
-Now you can run:
-
-```bash
-ipcheck
 ```
 
 ---
 
 ### **Option 2 — Quick Install (Linux)**  
-Download directly into `/usr/local/bin`:
 
 ```bash
 sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck -o /usr/local/bin/ipcheck
@@ -115,17 +144,11 @@ sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipchec
 sudo chmod +x /usr/local/bin/ipcheck
 ```
 
-Test:
-
-```bash
-ipcheck
-```
-
 ---
 
 ## 📘 Usage
 
-```
+\`\`\`
 ipcheck v0.7.3
 
 Usage: ipcheck [OPTIONS]
@@ -141,13 +164,13 @@ Options:
       --no-flag      Disable country flag emoji
       --check-update Check for a newer ipcheck version (if UPDATE_URL is set)
   -h, --help         Show this help message and exit
-```
+\`\`\`
 
 ---
 
 ## 🔄 Update Checking
 
-`ipcheck` includes a built‑in update mechanism.
+`ipcheck` includes a built-in update mechanism.
 
 To check if a newer version is available:
 
@@ -181,9 +204,9 @@ Run locally without installing:
 ### **Bumping version numbers**
 
 1. Update the version in the script header:
-   ```
+   \`\`\`
    VERSION="0.x.x"
-   ```
+   \`\`\`
 2. Update the `VERSION` file:
    ```bash
    echo "0.x.x" > VERSION
