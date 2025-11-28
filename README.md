@@ -18,12 +18,12 @@ It supports:
 - **Short output**  
   ```bash
   ipcheck --short
-  # 141.144.249.103 - Germany (DE) 🇩🇪
+  # 141.144.249.100 - Germany (DE) 🇩🇪
 
 - ***Quiet output (IP only)***
   ```bash
   ipcheck --quiet
-  # 141.144.249.103
+  # 141.144.249.100
 
 - ***Raw JSON / pretty JSON***
   ```bash
