@@ -61,6 +61,17 @@ sudo apt update
 sudo apt install curl jq python3
 ```
 
+## ⭐️ Quick Install (recommended)
+
+This installs `ipcheck` directly from GitHub into `/usr/local/bin`:
+
+```bash
+sudo curl -L https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/ipcheck \
+  -o /usr/local/bin/ipcheck
+
+sudo chmod +x /usr/local/bin/ipcheck
+
+
 ### **Install `ipcheck` globally**
 From inside the project directory:
 ```bash
@@ -72,12 +83,6 @@ Now you can run:
 ```bash
 ipcheck
 ```
-***Usage***
- ```text
-=======
-
----
-
 ## 📘 Usage
 
 ```
