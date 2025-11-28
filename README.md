@@ -1,72 +1,86 @@
-# ipcheck
+# ipcheck-cli
 
-`ipcheck` is a small Bash CLI tool for querying IP geolocation information using the public API at https://get.geojs.io.
+`ipcheck` is a lightweight Bash CLI tool for querying IP geolocation information using the public API at **https://get.geojs.io**.
 
 It supports:
-- Pretty, colored output (with country flag emoji)
-- Short / quiet modes for scripting
-- Raw JSON output (compact or pretty-printed)
-- Lookup of arbitrary IP addresses (`--ip`)
-- Simple caching to avoid hammering the API
-- Optional update check hook
 
-## Features
+- 🌈 Pretty, colored terminal output (with country flag emoji)
+- ✨ Short / quiet modes for scripting
+- 🧩 Raw JSON output (compact or pretty-printed)
+- 🔎 Lookup of arbitrary IP addresses (`--ip`)
+- ⚡ Local caching to avoid repeated API calls
+- 🔔 Optional update checker (`--check-update`)
+- 🛠 Works on Linux and macOS
 
-- **Default output**  
-  Full geolocation summary for your current public IP.
+---
 
-- **Short output**  
-  ```bash
-  ipcheck --short
-  # 141.144.249.100 - Germany (DE) 🇩🇪
+## 🚀 Features
 
-- ***Quiet output (IP only)***
-  ```bash
-  ipcheck --quiet
-  # 141.144.249.100
+### **Full output (default)**  
+Displays a full geolocation summary for your current public IP.
 
-- ***Raw JSON / pretty JSON***
-  ```bash
-  ipcheck --raw
-  ipcheck --raw-pretty
+### **Short output**
+```bash
+ipcheck --short
+# 141.144.249.100 - Germany (DE) 🇩🇪
+```
 
-- ***Lookup a specific IP***
-  ```bash
-  ipcheck --ip 8.8.8.8
-  ipcheck --ip 1.1.1.1 --short
+### **Quiet output (IP only)**
+```bash
+ipcheck --quiet
+# 141.144.249.100
+```
 
+### **Raw JSON / pretty JSON**
+```bash
+ipcheck --raw
+ipcheck --raw-pretty
+```
 
-## Installation 
-***Requirements***
+### **Lookup a specific IP**
+```bash
+ipcheck --ip 8.8.8.8
+ipcheck --ip 1.1.1.1 --short
+```
+
+---
+
+## 📦 Installation
+
+### **Requirements**
 
 - `bash`
 - `curl`
 - `jq`
-- `python3` (recommended: for IP validation + flag emoji)
+- `python3` (recommended for IP validation + emojis)
 - Linux or macOS terminal
 
-On Ubuntu / Debian:
- ```bash
- sudo apt update
- sudo apt install curl jq python3
- 
+### **Install dependencies on Ubuntu/Debian**
+```bash
+sudo apt update
+sudo apt install curl jq python3
 ```
 
-***Install as a global command***
-
- From the project directory:
- ```bash
- chmod +x ipcheck
- sudo cp ipcheck /usr/local/bin/ipcheck
-
- ```
+### **Install `ipcheck` globally**
+From inside the project directory:
+```bash
+chmod +x ipcheck
+sudo cp ipcheck /usr/local/bin/ipcheck
+```
 
 Now you can run:
- ```bash
+```bash
 ipcheck
 ```
 ***Usage***
  ```text
+=======
+
+---
+
+## 📘 Usage
+
+```
 ipcheck v0.7.3
 
 Usage: ipcheck [OPTIONS]
@@ -84,3 +98,63 @@ Options:
   -h, --help         Show this help message and exit
 ```
 
+---
+
+## 🔄 Update Checking
+
+`ipcheck` includes a built-in update mechanism.
+
+To check if a newer version is available:
+
+```bash
+ipcheck --check-update
+```
+
+The update URL is defined inside the script:
+
+```bash
+UPDATE_URL="https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/VERSION"
+```
+
+---
+
+## 🛠 Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/vespovios/ipcheck-cli.git
+cd ipcheck-cli
+```
+
+Run locally without installing:
+
+```bash
+./ipcheck --raw
+```
+
+### **Bumping version numbers**
+
+1. Update the version in the script header:
+   ```
+   VERSION="0.x.x"
+   ```
+2. Update the `VERSION` file:
+   ```bash
+   echo "0.x.x" > VERSION
+   ```
+3. Commit and tag:
+   ```bash
+   git add ipcheck VERSION
+   git commit -m "Bump version to 0.x.x"
+   git tag v0.x.x
+   git push
+   git push origin v0.x.x
+   ```
+
+---
+
+## 📜 License
+
+This project is licensed under the **MIT License**.  
+See the [LICENSE](LICENSE) file for details.
