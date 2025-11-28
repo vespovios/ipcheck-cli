@@ -5,7 +5,8 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/vespovios/ipcheck-cli/total)
 ![License](https://img.shields.io/github/license/vespovios/ipcheck-cli)
 [![CI](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml)
-[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvespovios%2Fipcheck-cli&title=Visitors)](https://github.com/vespovios/ipcheck-cli)
+[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvespovios%2Fipcheck-cli&title=visitors)](https://github.com/vespovios/ipcheck-cli)
+
 
 
 `ipcheck` is a lightweight Bash CLI tool for querying IP geolocation information using the public API at **https://get.geojs.io**.
