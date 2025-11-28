@@ -1,11 +1,12 @@
 # ipcheck-cli
 
 [![Homebrew tap](https://img.shields.io/badge/homebrew-vespovios%2Fipcheck-blue)](https://github.com/vespovios/homebrew-ipcheck)
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/vespovios/ipcheck-cli)](https://github.com/vespovios/ipcheck-cli/releases)
+[![GitHub release](https://img.shields.io/github/v/release/vespovios/ipcheck-cli)](https://github.com/vespovios/ipcheck-cli/releases)
 [![GitHub all releases](https://img.shields.io/github/downloads/vespovios/ipcheck-cli/total)](https://github.com/vespovios/ipcheck-cli/releases)
 [![License](https://img.shields.io/github/license/vespovios/ipcheck-cli)](https://github.com/vespovios/ipcheck-cli/blob/main/LICENSE)
 [![CI](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml)
-[![Visitors](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fvespovios%2Fipcheck-cli&title=Visitors&edge_flat=false)](https://github.com/vespovios/ipcheck-cli)
+[![Visitors](https://komarev.com/ghpvc/?username=vespovios&repo=ipcheck-cli&color=blue)](https://github.com/vespovios/ipcheck-cli)
+
 
 `ipcheck` is a lightweight Bash CLI tool for querying IP geolocation information using the public API at **https://get.geojs.io**.
 
