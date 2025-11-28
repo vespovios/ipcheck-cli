@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# ipcheck v0.7.1
+# ipcheck v0.7.3
+
+VERSION="0.7.3"
 UPDATE_URL="https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/VERSION"
-VERSION="0.7.1"
 BASE_URL_AUTO="https://get.geojs.io/v1/ip/geo.json"
 BASE_URL_IP="https://get.geojs.io/v1/ip/geo"
 CACHE_TTL=300            # seconds (5 minutes)
-UPDATE_URL=""            # e.g. "https://raw.githubusercontent.com/<you>/ipcheck-cli/main/VERSION"
 
 # -------- Flags --------
 SHORT=0
@@ -109,13 +109,51 @@ fetch_response_with_cache() {
   fi
 }
 
+# Return -1 if a<b, 0 if a==b, 1 if a>b
+compare_versions() {
+  local a="$1" b="$2"
+  local IFS='.' av bv
+  read -ra av <<< "$a"
+  read -ra bv <<< "$b"
+
+  local len=${#av[@]}
+  (( ${#bv[@]} > len )) && len=${#bv[@]}
+
+  for ((i=0; i<len; i++)); do
+    local x=${av[i]:-0}
+    local y=${bv[i]:-0}
+    ((10#$x < 10#$y)) && { echo -1; return; }
+    ((10#$x > 10#$y)) && { echo 1; return; }
+  done
+  echo 0
+}
+
 check_update() {
-  [[ -z "$UPDATE_URL" ]] && return 0
+  if [[ -z "$UPDATE_URL" ]]; then
+    echo "Update check: UPDATE_URL is not configured in this script."
+    return 0
+  fi
+
   local latest
-  latest=$(curl -m 2 -s "$UPDATE_URL" | head -n1 | tr -d ' \r\n')
-  [[ -z "$latest" ]] && return 0
-  if [[ "$latest" != "$VERSION" ]]; then
-    echo "Note: A newer ipcheck version is available: ${latest} (you have ${VERSION})"
+  latest=$(curl -m 3 -fsS "$UPDATE_URL" 2>/dev/null | head -n1 | tr -d ' \r\n') || {
+    echo "Update check: could not contact update server."
+    return 0
+  }
+
+  if [[ -z "$latest" ]]; then
+    echo "Update check: received empty/invalid response from update URL."
+    return 0
+  fi
+
+  local cmp
+  cmp=$(compare_versions "$VERSION" "$latest")
+
+  if [[ "$cmp" == "0" ]]; then
+    echo "ipcheck is up to date (version $VERSION)."
+  elif [[ "$cmp" == "-1" ]]; then
+    echo "A newer ipcheck is available: $latest (you have $VERSION)."
+  else
+    echo "Your local ipcheck ($VERSION) is newer than the remote version ($latest)."
   fi
 }
 
@@ -249,10 +287,10 @@ fi
 # Validate IP if provided
 validate_ip "$TARGET_IP"
 
-# Optional: explicit update check
+# Explicit update check: only show update info, then exit
 if [[ "$CHECK_UPDATE" -eq 1 ]]; then
   check_update
-  # continue with normal output too
+  exit 0
 fi
 
 # -------- Fetch data (with cache) --------
@@ -329,9 +367,3 @@ printf "%bTimezone:%b        %s\n"       "$YELLOW" "$RESET" "$timezone"
 printf "%bLatitude:%b        %s\n"       "$YELLOW" "$RESET" "$lat"
 printf "%bLongitude:%b       %s\n"       "$YELLOW" "$RESET" "$lon"
 printf "\n"
-
-# Optional gentle auto-check (only in full mode, only if URL set)
-if [[ "$CHECK_UPDATE" -eq 0 && -n "$UPDATE_URL" ]]; then
-  check_update
-fi
-
