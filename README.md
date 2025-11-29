@@ -1,11 +1,39 @@
 # ipcheck-cli
 
-[![Homebrew tap](https://img.shields.io/badge/homebrew-vespovios%2Fipcheck-blue)](https://github.com/vespovios/homebrew-ipcheck)
-[![GitHub release](https://img.shields.io/github/v/release/vespovios/ipcheck-cli)](https://github.com/vespovios/ipcheck-cli/releases)
-[![GitHub all releases](https://img.shields.io/github/downloads/vespovios/ipcheck-cli/total)](https://github.com/vespovios/ipcheck-cli/releases)
-[![License](https://img.shields.io/github/license/vespovios/ipcheck-cli)](https://github.com/vespovios/ipcheck-cli/blob/main/LICENSE)
-[![CI](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml)
-[![Visitors](https://komarev.com/ghpvc/?username=vespovios&repo=ipcheck-cli&color=blue)](https://github.com/vespovios/ipcheck-cli)
+<p align="center">
+  <a href="https://github.com/vespovios/homebrew-ipcheck">
+    <img src="https://img.shields.io/badge/Homebrew-ipcheck_cli-ffbf00?logo=homebrew&logoColor=white&labelColor=3f3f3f" alt="Homebrew tap">
+  </a>
+  <a href="https://github.com/vespovios/ipcheck-cli">
+    <img src="https://img.shields.io/github/v/release/vespovios/ipcheck-cli" alt="Latest release">
+  </a>
+  <a href="https://github.com/vespovios/ipcheck-cli/releases">
+    <img src="https://img.shields.io/github/downloads/vespovios/ipcheck-cli/total" alt="Downloads">
+  </a>
+  <a href="https://github.com/vespovios/ipcheck-cli/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/vespovios/ipcheck-cli" alt="License">
+  </a>
+  <a href="https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml">
+    <img src="https://github.com/vespovios/ipcheck-cli/actions/workflows/ci.yml/badge.svg" alt="CI status">
+  </a>
+  <a href="https://github.com/vespovios/ipcheck-cli">
+    <img src="https://komarev.com/ghpvc/?username=vespovios&repo=ipcheck-cli&color=0d6efd&label=Profile%20views" alt="Profile views">
+  </a>
+</p>
+
+<p align="center">
+  <b>macOS Installation (Homebrew)</b><br>
+  <code>brew install vespovios/ipcheck/ipcheck</code>
+</p>
+
+<p align="center">
+  <b>Ubuntu / Debian Installation</b><br>
+  <code>curl -sL https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/install.sh | bash</code>
+</p>
+
+<p align="center">
+  <sub>Alternatively, download the script manually and place <code>ipcheck</code> in <code>/usr/local/bin</code>.</sub>
+</p>
 
 
 `ipcheck` is a lightweight Bash CLI tool for querying IP geolocation information using the public API at **https://get.geojs.io**.
