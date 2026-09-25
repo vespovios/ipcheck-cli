@@ -1,11 +1,17 @@
 #!/usr/bin/env bash
-# ipcheck v0.7.3
+# ipcheck v0.8.0
 
-VERSION="0.7.3"
+VERSION="0.8.0"
 UPDATE_URL="https://raw.githubusercontent.com/vespovios/ipcheck-cli/main/VERSION"
 BASE_URL_AUTO="https://get.geojs.io/v1/ip/geo.json"
 BASE_URL_IP="https://get.geojs.io/v1/ip/geo"
-CACHE_TTL=300            # seconds (5 minutes)
+# GeoJS also serves family-specific hosts. These resolve the caller's address
+# on that family only, so a dual-stack host is queried once per family.
+# ipv6.geojs.io is AAAA-only, so it simply fails on IPv4-only networks.
+BASE_URL_IPV4="https://ipv4.geojs.io/v1/ip/geo.json"
+BASE_URL_IPV6="https://ipv6.geojs.io/v1/ip/geo.json"
+CURL_TIMEOUT=10           # seconds
+CACHE_TTL=300             # seconds (5 minutes)
 
 # -------- Flags --------
 SHORT=0
@@ -14,6 +20,8 @@ RAW_PRETTY=0
 QUIET=0
 NOFLAG=0
 CHECK_UPDATE=0
+ALL_IPS=0
+FAMILY=""                 # "" = auto, otherwise "ipv4" or "ipv6"
 TARGET_IP=""
 
 # color enabled if stdout is a terminal
@@ -38,14 +46,21 @@ Options:
   -r, --raw          Output raw JSON from the API
       --raw-pretty   Output pretty-printed JSON
   -q, --quiet        Output only the IP address
+  -4, --ipv4         Only report the IPv4 address
+  -6, --ipv6         Only report the IPv6 address
+  -a, --all-ips      With --quiet, print every discovered IP, one per line
       --no-flag      Disable country flag emoji
       --check-update Check for a newer ipcheck version (if UPDATE_URL is set)
   -h, --help         Show this help message and exit
+
+Both the IPv4 and the IPv6 address are shown when the host has both.
 
 Examples:
   ipcheck
   ipcheck --short
   ipcheck --quiet
+  ipcheck --all-ips --quiet
+  ipcheck --ipv4
   ipcheck --ip 8.8.8.8
   ipcheck --raw-pretty
 EOF
@@ -73,40 +88,57 @@ install_hint() {
   fi
 }
 
-cache_file_for_ip() {
+cache_file_for_key() {
   local key="$1"
   [[ -z "$key" ]] && key="auto"
   key=${key//[^0-9A-Za-z_.-]/_}
   echo "/tmp/ipcheck_cache_${key}.txt"
 }
 
-fetch_response_with_cache() {
-  local ip="$1"
-  local url=""
-  if [[ -n "$ip" ]]; then
-    url="${BASE_URL_IP}/${ip}.json"
-  else
-    url="$BASE_URL_AUTO"
-  fi
+# A colon can never appear in an IPv4 literal but always appears in an IPv6
+# literal, so this is a reliable family test.
+is_ipv6_addr() {
+  [[ "$1" == *:* ]]
+}
 
-  local cache_file
-  cache_file=$(cache_file_for_ip "$ip")
-  local now ts
+# fetch_json <url> <cache_key>
+# Prints the response body on stdout. Returns non-zero (and prints nothing) if
+# the request failed, so callers can treat a family as unavailable.
+fetch_json() {
+  local url="$1" key="$2"
+  local cache_file now ts body
 
+  cache_file=$(cache_file_for_key "$key")
   now=$(date +%s)
 
   if [[ -f "$cache_file" ]]; then
     read -r ts < "$cache_file"
     if [[ "$ts" =~ ^[0-9]+$ ]] && (( now - ts < CACHE_TTL )); then
-      response=$(tail -n +2 "$cache_file")
-      return
+      tail -n +2 "$cache_file"
+      return 0
     fi
   fi
 
-  response=$(curl -s "$url")
-  if [[ -n "$response" ]]; then
-    printf '%s\n%s\n' "$now" "$response" > "$cache_file"
+  body=$(curl -s -m "$CURL_TIMEOUT" "$url") || return 1
+
+  # Only cache real JSON, otherwise a proxy error page poisons the cache.
+  if [[ -n "$body" ]] && printf '%s' "$body" | jq -e . >/dev/null 2>&1; then
+    printf '%s\n%s\n' "$now" "$body" > "$cache_file"
+    printf '%s\n' "$body"
+    return 0
   fi
+
+  return 1
+}
+
+# fetch_family <ipv4|ipv6>
+# Queries the family-specific GeoJS host so the answer is unambiguous.
+fetch_family() {
+  case "$1" in
+    ipv4) fetch_json "$BASE_URL_IPV4" "auto_ipv4" ;;
+    ipv6) fetch_json "$BASE_URL_IPV6" "auto_ipv6" ;;
+    *)    return 1 ;;
+  esac
 }
 
 # Return -1 if a<b, 0 if a==b, 1 if a>b
@@ -180,7 +212,7 @@ PY
     fi
   else
     # Fallback: simple IPv4 check
-        if [[ ! "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
+    if [[ ! "$ip" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}$ ]]; then
       echo "Warning: Could not strictly validate IP (python3 missing); proceeding with '$ip'." >&2
       return 0
     fi
@@ -190,7 +222,7 @@ PY
     read -r -a octets <<< "$ip"
 
     for o in "${octets[@]}"; do
-      if (( o < 0 || o > 255 )); then
+      if (( 10#$o < 0 || 10#$o > 255 )); then
         echo "Error: '$ip' is not a valid IPv4 address." >&2
         exit 1
       fi
@@ -222,6 +254,18 @@ while [[ $# -gt 0 ]]; do
     -s|--short)
       SHORT=1
       use_color=0
+      shift
+      ;;
+    -4|--ipv4)
+      FAMILY="ipv4"
+      shift
+      ;;
+    -6|--ipv6)
+      FAMILY="ipv6"
+      shift
+      ;;
+    -a|--all-ips)
+      ALL_IPS=1
       shift
       ;;
     -r|--raw)
@@ -298,15 +342,61 @@ if [[ "$CHECK_UPDATE" -eq 1 ]]; then
 fi
 
 # -------- Fetch data (with cache) --------
+# The auto endpoint only ever reports one address: whichever family the
+# connection to GeoJS happened to use. On a dual-stack host curl prefers IPv6,
+# so the IPv4 address stays invisible. To surface both we also ask the
+# family-specific host for the other family, best effort.
 response=""
-fetch_response_with_cache "$TARGET_IP"
+ipv4_ip=""
+ipv6_ip=""
 
-if [[ -z "$response" ]]; then
-  echo "Error: No response from API." >&2
-  exit 1
+if [[ -n "$TARGET_IP" ]]; then
+  response=$(fetch_json "${BASE_URL_IP}/${TARGET_IP}.json" "$TARGET_IP") || true
+  [[ -z "$response" ]] && { echo "Error: No response from API." >&2; exit 1; }
+  if is_ipv6_addr "$TARGET_IP"; then
+    ipv6_ip="$TARGET_IP"
+  else
+    ipv4_ip="$TARGET_IP"
+  fi
+elif [[ -n "$FAMILY" ]]; then
+  response=$(fetch_family "$FAMILY") || true
+  if [[ -z "$response" ]]; then
+    echo "Error: No $FAMILY connectivity to geojs.io." >&2
+    exit 1
+  fi
+  if [[ "$FAMILY" == "ipv6" ]]; then
+    ipv6_ip=$(printf '%s' "$response" | jq -r '.ip // empty')
+  else
+    ipv4_ip=$(printf '%s' "$response" | jq -r '.ip // empty')
+  fi
+else
+  response=$(fetch_json "$BASE_URL_AUTO" "auto") || true
+  if [[ -z "$response" ]]; then
+    echo "Error: No response from API." >&2
+    exit 1
+  fi
+
+  primary_ip=$(printf '%s' "$response" | jq -r '.ip // empty')
+  if is_ipv6_addr "$primary_ip"; then
+    ipv6_ip="$primary_ip"
+    other="ipv4"
+  else
+    ipv4_ip="$primary_ip"
+    other="ipv6"
+  fi
+
+  # Best effort: the address of the family the default connection skipped.
+  if other_response=$(fetch_family "$other"); then
+    other_ip=$(printf '%s' "$other_response" | jq -r '.ip // empty')
+    if [[ "$other" == "ipv6" ]]; then
+      ipv6_ip="$other_ip"
+    else
+      ipv4_ip="$other_ip"
+    fi
+  fi
 fi
 
-# -------- Raw modes --------
+# -------- Raw modes (primary response only) --------
 if [[ "$RAW" -eq 1 ]]; then
   echo "$response"
   exit 0
@@ -318,7 +408,6 @@ if [[ "$RAW_PRETTY" -eq 1 ]]; then
 fi
 
 # -------- Parse & sanitize JSON --------
-ip=$(echo "$response" | jq -r '.ip')
 country=$(echo "$response" | jq -r '.country')
 country_code=$(echo "$response" | jq -r '.country_code')
 
@@ -341,18 +430,33 @@ if [[ "$NOFLAG" -eq 0 ]]; then
   flag=$(country_code_to_flag "$country_code")
 fi
 
+# Comma separated list of the addresses we actually found, IPv4 first.
+addresses=""
+[[ -n "$ipv4_ip" ]] && addresses="$ipv4_ip"
+if [[ -n "$ipv6_ip" ]]; then
+  [[ -n "$addresses" ]] && addresses="$addresses, $ipv6_ip"
+  [[ -z "$addresses" ]] && addresses="$ipv6_ip"
+fi
+primary_ip="$ipv4_ip"
+[[ -z "$primary_ip" ]] && primary_ip="$ipv6_ip"
+
 # -------- Quiet mode --------
 if [[ "$QUIET" -eq 1 ]]; then
-  echo "$ip"
+  if [[ "$ALL_IPS" -eq 1 ]]; then
+    [[ -n "$ipv4_ip" ]] && echo "$ipv4_ip"
+    [[ -n "$ipv6_ip" ]] && echo "$ipv6_ip"
+  else
+    echo "$primary_ip"
+  fi
   exit 0
 fi
 
 # -------- Short mode --------
 if [[ "$SHORT" -eq 1 ]]; then
   if [[ "$NOFLAG" -eq 1 ]]; then
-    echo "${ip} - ${country} (${country_code})"
+    echo "${addresses} - ${country} (${country_code})"
   else
-    echo "${ip} - ${country} (${country_code}) ${flag}"
+    echo "${addresses} - ${country} (${country_code}) ${flag}"
   fi
   exit 0
 fi
@@ -362,7 +466,13 @@ printf "\n"
 printf "%b🌍  %bPublic IP Information%b %s\n" "$BLUE" "$BOLD" "$RESET" "$flag"
 printf "%b-----------------------------------------%b\n" "$BLUE" "$RESET"
 
-printf "%bIP Address:%b      %s\n"       "$GREEN" "$RESET" "$ip"
+# With a single address keep the original "IP Address:" label.
+if [[ -n "$ipv4_ip" && -n "$ipv6_ip" ]]; then
+  printf "%bIPv4 Address:%b     %s\n" "$GREEN" "$RESET" "$ipv4_ip"
+  printf "%bIPv6 Address:%b     %s\n" "$GREEN" "$RESET" "$ipv6_ip"
+else
+  printf "%bIP Address:%b      %s\n"       "$GREEN" "$RESET" "$primary_ip"
+fi
 printf "%bCountry:%b         %s (%s)\n" "$GREEN" "$RESET" "$country" "$country_code"
 printf "%bRegion:%b          %s\n"       "$GREEN" "$RESET" "$region"
 printf "%bCity:%b            %s\n"       "$GREEN" "$RESET" "$city"

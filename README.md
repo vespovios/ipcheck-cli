@@ -41,6 +41,7 @@
 It supports:
 
 - 🌈 Pretty, colored terminal output (with country flag emoji)
+- 🌍 Shows both your IPv4 **and** IPv6 address on dual-stack connections
 - ✨ Short / quiet modes for scripting
 - 🧩 Raw JSON output (compact or pretty-printed)
 - 🔎 Lookup of arbitrary IP addresses (`--ip`)
@@ -55,16 +56,58 @@ It supports:
 ### **Full output (default)**  
 Displays a full geolocation summary for your current public IP.
 
+On a dual-stack connection both addresses are listed:
+
+```bash
+ipcheck
+```
+
+```
+🌍  Public IP Information 🇩🇪
+-----------------------------------------
+IPv4 Address:     88.198.32.117
+IPv6 Address:     2a01:4f8:c17:4a1:2b3c:9d8e:7f60:1a2b
+Country:          Germany (DE)
+Region:           Berlin
+City:             Berlin
+ISP:              Hetzner Online GmbH
+Timezone:         Europe/Berlin
+Latitude:         52.52
+Longitude:        13.4
+```
+
+If only one address family is reachable, the original single `IP Address:`
+line is shown instead.
+
+> **Why two hosts?** `get.geojs.io` only reports the address of the connection it
+> received, so on a dual-stack host it usually returns your IPv6 address and the
+> IPv4 one stays invisible. `ipcheck` therefore also queries the family-specific
+> GeoJS hosts `ipv4.geojs.io` and `ipv6.geojs.io`. `ipv6.geojs.io` is AAAA-only,
+> so it simply fails on IPv4-only networks and no address is reported for it.
+
 ### **Short output**
 ```bash
 ipcheck --short
-# 141.144.249.100 - Germany (DE) 🇩🇪
+# 88.198.32.117, 2a01:4f8:c17:4a1:2b3c:9d8e:7f60:1a2b - Germany (DE) 🇩🇪
 ```
 
 ### **Quiet output (IP only)**
 ```bash
 ipcheck --quiet
-# 141.144.249.100
+# 88.198.32.117
+```
+
+### **Every address, one per line**
+```bash
+ipcheck --all-ips --quiet
+# 88.198.32.117
+# 2a01:4f8:c17:4a1:2b3c:9d8e:7f60:1a2b
+```
+
+### **Restrict to one address family**
+```bash
+ipcheck --ipv4
+ipcheck --ipv6
 ```
 
 ### **Raw JSON / pretty JSON**
@@ -73,9 +116,13 @@ ipcheck --raw
 ipcheck --raw-pretty
 ```
 
+`--raw` and `--raw-pretty` print the primary response only, so their output
+shape is unchanged. Use `ipcheck --all-ips --quiet` to script against both.
+
 ### **Lookup a specific IP**
 ```bash
 ipcheck --ip 8.8.8.8
+ipcheck --ip 2606:4700:4700::1111
 ipcheck --ip 1.1.1.1 --short
 ```
 
@@ -184,7 +231,7 @@ ipcheck
 ## 📘 Usage
 
 ```text
-ipcheck v0.7.3
+ipcheck v0.8.0
 
 Usage: ipcheck [OPTIONS]
 
@@ -196,9 +243,14 @@ Options:
   -r, --raw          Output raw JSON from the API
       --raw-pretty   Output pretty-printed JSON
   -q, --quiet        Output only the IP address
+  -4, --ipv4         Only report the IPv4 address
+  -6, --ipv6         Only report the IPv6 address
+  -a, --all-ips      With --quiet, print every discovered IP, one per line
       --no-flag      Disable country flag emoji
       --check-update Check for a newer ipcheck version (if UPDATE_URL is set)
   -h, --help         Show this help message and exit
+
+Both the IPv4 and the IPv6 address are shown when the host has both.
 ```
 
 ---
